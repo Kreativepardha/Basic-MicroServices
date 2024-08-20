@@ -40,9 +40,18 @@ orders: [
         date: { type: Date, default: Date.now() }
     }
 ]
+}, {
+    toJSON: {
+        transform(doc, ret) {
+            delete ret.password;
+            delete ret.salt;
+            delete ret.__v;
+        }
+    },
+    timestamps: true
 })
 
 
-const Customer = mongoose.model('Customer', customerSchema)
+const CustomerModel = mongoose.model('CustomerModel', customerSchema)
 
-module.exports = Customer
+module.exports = CustomerModel 
