@@ -8,6 +8,6 @@ const addressSchema = new mongoose.Schema({
 })
 
 
-const AddressModel = mongoose.model('AdressModel', addressSchema)
+const AddressModel = mongoose.model('AddressModel', addressSchema)
 
 module.exports =  AddressModel;

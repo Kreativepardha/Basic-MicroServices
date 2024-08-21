@@ -1,13 +1,13 @@
-const mongoose = required('mongoose')
+const mongoose = require('mongoose')
 
 const customerSchema = new mongoose.Schema({
-    email: String,
+    email: { type: String, unique: true},
     password: String,
     salt: String,
     phone: String,
 address: [
         { 
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'Address',
             required: true
           }
@@ -37,7 +37,7 @@ orders: [
     {
         _id: { type: String, required: true },
         amount: { type: String },
-        date: { type: Date, default: Date.now() }
+        date: { type: Date, default: Date.now }
     }
 ]
 }, {

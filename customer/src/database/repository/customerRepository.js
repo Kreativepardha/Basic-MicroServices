@@ -14,7 +14,12 @@ class CustomerRepository {
             const customerResult = await customer.save()
             return customerResult;
         }
-
+        async FindCustomerByEmail(email) {
+            return await CustomerModel.findOne({ email })
+        }
+        async FindCustomerById(customerId) {
+            return await CustomerModel.findById(customerId).populate('address')
+        }
 
 }
 
