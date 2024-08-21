@@ -1,35 +1,61 @@
-const express = require('express')
 const CustomerService = require('../services/customerServices')
 const { signInSchema, signupSchema, addressSchema } = require('../../utils/validations/customerValidations')
+const { ZodError } = require('zod')
 
 
 
 class CustomerController {
     constructor() {
         this.service = new CustomerService()
+        
     }
-   static async signUp(req,res) {
+    async signUp(req,res) {
         try {
               const result = signupSchema.safeParse(req.body)
-              const customer = await this.service.SignUp(result)
-              res.status(201).json(customer);
+              const customer = await this.service.signUp(result.data)
+             if(!result.success) {
+                    if(result.error instanceof ZodError) {
+                        return res.status(422).json({
+                            message:"Zod validation erro",
+                            error:err.message
+                        })
+                    }
+             }         
+              
+                res.status(201).json(customer);
 
         } catch (err) {
+            if(err instanceof ZodError) {
+                return res.status(422).json({
+                    error:err.ZodError,
+                    message:"zod errorr",
+                    err
+                })
+            }
             res.status(400).json({ 
                 message:"Customer Controller errror:::",
-                err
+                error: err.message
              })
         }
     }
-   static async signIn(req,res) {
+    async signIn(req,res) {
         try {
             const result = signInSchema.safeParse(req.body)
-            const token = await this.service.SignIn(result)
-            res.status(200).json({ token })
+            const token = await this.service.signIn(result.data)
+            if(!result.success) {
+                if(result.error instanceof ZodError) {
+                    return res.status(422).json({
+                        message:"Zod validation erro",
+                        error:err.message
+                    })
+                }
+         }     
+         const payload = await this.service.signIn(result.data)
+         res.status(200).json({ token: payload.token, customer: payload.customer })
         } catch (err) {
             res.status(400).json({
                 message:"Customer Controller error",
-                err
+                error: err.message
             })
         }
     }
@@ -38,7 +64,7 @@ class CustomerController {
             const { customerId } = req.params;
             const wishlistItem  = req.body;
 
-            const updatedCustomer = await this.service.AddWishListItem(customerId, wishlistItem)
+            const updatedCustomer = await this.service.AddWishlistItem(customerId, wishlistItem)
             res.status(200).json(updatedCustomer)
         } catch (err) {
         res.status(400).json({ error: err.message  })
@@ -50,7 +76,7 @@ class CustomerController {
             const { customerId  } = req.params;
             const validateDate = addressSchema.parse(req.body)
 
-            const updatedCustomer = await this.service.addAddres(customerId, validateDate)
+            const updatedCustomer = await this.service.AddAddres(customerId, validateDate)
             res.status(200).json({ message:"Addres updated Succesfully", updatedCustomer })
         } catch (err) {
                 res.status(400).json({ error:err.message })
@@ -69,8 +95,9 @@ class CustomerController {
 
 };
 
+const customerService = new CustomerService()
+const customerController = new CustomerController(customerService)
 
 
 
-
-module.exports = CustomerController;
+module.exports = {CustomerController, customerController};

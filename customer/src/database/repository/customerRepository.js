@@ -10,7 +10,6 @@ class CustomerRepository {
             const customer = new CustomerModel({
                 email,password,salt,phone,address: []
             })
-            
             const customerResult = await customer.save()
             return customerResult;
         }

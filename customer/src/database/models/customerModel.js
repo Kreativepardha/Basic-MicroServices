@@ -8,7 +8,7 @@ const customerSchema = new mongoose.Schema({
 address: [
         { 
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Address',
+            ref: 'AddressModel',
             required: true
           }
     ],
